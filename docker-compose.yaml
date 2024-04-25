@@ -1,0 +1,21 @@
+version: "3"
+
+name: iu
+services:
+  suphouse:
+    networks:
+      - iu_iu
+    build:
+      dockerfile: ./Dockerfile
+      args:
+        GIT_PAT: ${GIT_PAT}
+        GIT_USERNAME: ${GIT_USERNAME}
+    volumes:
+      - .:/app
+    env_file: .env
+    ports:
+      - "8020:8020"
+
+networks:
+  iu_iu:
+    external: true
