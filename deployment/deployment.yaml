@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: subhouse
-          image: iu_subhouse:1.0.0
+          image: iu_subhouse:1.0.6
           imagePullPolicy: IfNotPresent
           ports:
             - name: main-port

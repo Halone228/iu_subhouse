@@ -11,14 +11,12 @@ class SourcesResource:
     @httperr_on_validate
     @httperr_on_error
     async def on_post(self, req: Request, resp: Response):
-        raw = await req.stream.read()
-        logger.debug(raw.decode('utf-8'))
-        data = loads(loads(raw))
-        logger.debug(type(data))
-        SourceShort.model_validate(data)
+        raw = bytes(await req.stream.read())
+        SourceShort.model_validate_json(raw)
+        data = loads(raw)
         response = await request_client.post(
             ENDPOINTS.CARRIGE_CREATE_SOURCE,
-            json=data
+            content=raw
         )
         created_id = response.json()['created_id']
         await redis_client.rpush(
@@ -30,9 +28,11 @@ class SourcesResource:
             'status': 'ok'
         })
 
+    @httperr_on_error
     async def on_get(self, req: Request, resp: Response):
         vein_id = req.get_param_as_int('vein_id')
         source_id = await redis_client.rpop(f'iu_subhouse:unused_sources:{vein_id}')
+        resp.status = HTTP_200
         if not source_id:
             resp.text = dumps(
                 {'source_id': -1}
@@ -46,6 +46,6 @@ class SourcesResource:
     async def on_put(self, req: Request, resp: Response):
         data = loads((await req.stream.read()).decode())
         source_id = data['source_id']
-        vein_id = await redis_client.get(f'iu_subhouse:source_vein:{source_id}')
+        vein_id = (await redis_client.get(f'iu_subhouse:source_vein:{source_id}')).decode()
         await redis_client.rpush(f'iu_subhouse:unused_sources:{vein_id}', source_id)
         resp.status = HTTP_200
