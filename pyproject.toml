@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "iu-subhouse"
+version = "0.1.0"
+description = ""
+authors = ["halone <haloneprog@gmail.com>"]
+readme = "README.md"
+packages = [{include = "iu_subhouse"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+redis = "^5.0.3"
+falcon = "^3.1.3"
+spectree = "^1.2.9"
+iu-datamodels = {git = "https://github.com/Halone228/iu_datamodels"}
+httpx = "^0.27.0"
+uvicorn = "^0.29.0"
+loguru = "^0.7.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dev = "main:start_dev"
